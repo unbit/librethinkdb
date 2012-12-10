@@ -7,6 +7,9 @@ Example
 -------
 
 ```c
+
+   #include <rethinkdb.h>
+   
    // connect to the rethinkdb server (addr, port, milliseconds_timeout)
    struct rethinkdb_connection *r = rethinkdb_init("127.0.0.1", 28015, 1000);
    
@@ -32,3 +35,22 @@ Example
        printf("JSON = %s\n", items[i]);
    }
 ```
+
+Requirements
+------------
+
+You need protobuf-c library (apt-get install libprotobuf-c0-dev)
+
+Install
+-------
+
+simply run make then move the resulting librethinkdb.so to a library directory (like /usr/local/lib) and librethinkdb.h
+to a header directory (like /usr/local/include)
+
+Status
+------
+
+Error checking is still flaky
+
+The protobuf api is exposed, so while waiting for higher level functions you can build
+your queries using the Query, Term, ... objects
