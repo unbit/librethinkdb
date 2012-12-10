@@ -44,13 +44,15 @@ You need protobuf-c library (apt-get install libprotobuf-c0-dev)
 Install
 -------
 
-simply run make then move the resulting librethinkdb.so to a library directory (like /usr/local/lib) and librethinkdb.h
-to a header directory (like /usr/local/include)
+simply run make then move the resulting librethinkdb.so to a libraries directory (like /usr/local/lib) and librethinkdb.h
+to a headers directory (like /usr/local/include)
 
 Status
 ------
 
 Error checking is still flaky
+
+Timeout is still unimplemented
 
 The protobuf api is exposed, so while waiting for higher level functions you can build
 your queries using the Query, Term, ... objects
