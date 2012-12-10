@@ -364,7 +364,7 @@ char **rethinkdb_filter(struct rethinkdb_connection *rdb_conn, char *dbname, cha
         Query q = QUERY__INIT;
         ReadQuery rq = READ_QUERY__INIT;
         Term t = TERM__INIT;
-        Term j = TERM__INIT;
+        //Term j = TERM__INIT;
 	Term__Call tc = TERM__CALL__INIT;
 	Builtin b = BUILTIN__INIT;
 	Builtin__Filter f = BUILTIN__FILTER__INIT;
@@ -387,12 +387,62 @@ char **rethinkdb_filter(struct rethinkdb_connection *rdb_conn, char *dbname, cha
 	f.predicate = &p;
 	//p. = &j;
 
-	j.type = TERM__TERM_TYPE__JSON;
-	j.jsonstring = filter;
+	//j.type = TERM__TERM_TYPE__JSON;
+	//j.jsonstring = filter;
 
         if (rethinkdb_send_query(rdb_conn, &q)) {
                 return NULL;
         }
 
         return rethinkdb_response_list(rdb_conn, len);
+}
+
+/*
+	r.table('table').insert([{...}])
+
+*/
+char *rethinkdb_insert(struct rethinkdb_connection *rdb_conn, char *dbname, char *tablename, char **json, unsigned int json_n, int upsert) {
+
+	char *json_r = NULL;
+
+	Query q = QUERY__INIT;
+        WriteQuery wq = WRITE_QUERY__INIT;
+	WriteQuery__Insert in = WRITE_QUERY__INSERT__INIT;
+	TableRef tr = TABLE_REF__INIT;
+	
+
+        q.type = QUERY__QUERY_TYPE__WRITE;
+        q.token = rdb_conn->token;
+        q.write_query = &wq;
+
+        wq.type = WRITE_QUERY__WRITE_QUERY_TYPE__INSERT;
+	wq.insert = &in;
+
+	tr.db_name = dbname;
+        tr.table_name = tablename;
+
+	in.table_ref = &tr;
+	in.n_terms = json_n;
+	in.terms = malloc(sizeof(Term *) * json_n);
+	unsigned int i;
+	for(i=0;i<json_n;i++) {
+		in.terms[i] = malloc(sizeof(Term));
+		term__init(in.terms[i]);
+		in.terms[i]->type = TERM__TERM_TYPE__JSON;
+		in.terms[i]->jsonstring = json[i];
+	}
+	in.overwrite = upsert;
+
+        if (rethinkdb_send_query(rdb_conn, &q)) {
+		goto clear;
+        }
+
+        json_r = rethinkdb_response_json(rdb_conn);
+clear:
+	for(i=0;i<json_n;i++) {
+		free(in.terms[i]);
+	}
+	free(in.terms);
+ 
+	return json_r;
 }

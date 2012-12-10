@@ -3,6 +3,9 @@
 #include <string.h>
 #include <netinet/in.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 struct rethinkdb_connection {
         char *addr;
@@ -40,3 +43,4 @@ char **rethinkdb_table(struct rethinkdb_connection *, char *, char *, int, unsig
 struct rethinkdb_connection *rethinkdb_init(char *, unsigned short, int);
 char *rethinkdb_get(struct rethinkdb_connection *, char *, char *, char *, char *, int);
 char **rethinkdb_filter(struct rethinkdb_connection *, char *, char *, char *, unsigned int *);
+char *rethinkdb_insert(struct rethinkdb_connection *, char *, char *, char **, unsigned int, int);
